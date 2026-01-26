@@ -89,6 +89,36 @@ export const resumes: Resume[] = [
       },
     },
   },
+  {
+    id: "4",
+    companyName: "Delloite",
+    jobTitle: "Web Developer",
+    imagePath: "/images/resume_02.png",
+    resumePath: "/resumes/resume-3.pdf",
+    feedback: {
+      overallScore: 75,
+      ATS: {
+        score: 90,
+        tips: [],
+      },
+      toneAndStyle: {
+        score: 90,
+        tips: [],
+      },
+      content: {
+        score: 90,
+        tips: [],
+      },
+      structure: {
+        score: 90,
+        tips: [],
+      },
+      skills: {
+        score: 90,
+        tips: [],
+      },
+    },
+  },
 ];
 
 export const AIResponseFormat = `

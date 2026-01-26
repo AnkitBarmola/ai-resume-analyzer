@@ -18,13 +18,14 @@ export default function Home() {
         <h1>Track your Application & Resume Ratings</h1>
         <h2> Review your submissions and check your AI-powered feedback.</h2>
       </div>
-    </section>
     {resumes.length > 0 && (
-      <div className="resumes-section">
+      <div className="resumes-section grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+
         {resumes.map((resume) => (
           <ResumeCard key={resume.id} resume={resume} />
         ))}
       </div>
     )}
+    </section>
   </main>
 }
