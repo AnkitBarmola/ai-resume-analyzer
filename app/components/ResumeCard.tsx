@@ -3,14 +3,14 @@ import ScoreCircle from './ScoreCircle'
 
 const ResumeCard = ({resume}: {resume: Resume}) => {
   return (
-    <div cla>
+    <div >
       <Link to={`/resume/${resume.id}`} className="resume-card animate-in fade-in duration-500"> 
          <div className="resume-card-header">
            <div className="flex flex-col gap-2">
-              <h2 className='text-black font-bold break-words'>{resume.jobTitle}</h2>
-              <h3 className='text-lg text-gray-600 break-words'>{resume.companyName}</h3>
+              <h2 className='text-black font-bold wrap-break-word'>{resume.jobTitle}</h2>
+              <h3 className='text-lg text-gray-600 wrap-break-word'>{resume.companyName}</h3>
            </div>
-           <div className='flex-shrink-0 flex items-center justify-center'>
+           <div className='shrink-0 flex items-center justify-center'>
              <ScoreCircle score={resume.feedback.overallScore} />
            </div>
          </div>
