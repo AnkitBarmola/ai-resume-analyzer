@@ -5,16 +5,7 @@ import Summary from "~/components/Summary";
 import ATS from "~/components/ATS";
 import Details from "~/components/Details";
 
-// Define types
-interface ATSFeedback {
-    score: number;
-    tips: string[];
-}
-
-interface Feedback {
-    ATS: ATSFeedback;
-    [key: string]: any; // Add other feedback properties as needed
-}
+// Types are defined in types/index.d.ts
 
 interface ResumeData {
     resumePath: string;
@@ -106,7 +97,7 @@ const Resume = () => {
                     {feedback ? (
                         <div className="flex flex-col gap-8 animate-in fade-in duration-1000">
                             <Summary feedback={feedback} />
-                            <ATS score={feedback.ATS.score || 0} suggestions={feedback.ATS.tips || []} />
+                            <ATS score={feedback.ATS.score || 0} suggestions={feedback.ATS.tips as any || []} />
                             <Details feedback={feedback} />
                         </div>
                     ) : (
