@@ -14,7 +14,7 @@ interface ResumeData {
 }
 
 export const meta = () => ([
-    { title: 'Resumind | Review' },
+    { title: 'CareerMate | Review' },
     { name: 'description', content: 'Detailed overview of your resume' },
 ]);
 
