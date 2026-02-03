@@ -411,6 +411,25 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     return puter.kv.flush();
   };
 
+  const deleteResume = async (id: string) => {
+    const puter = getPuter();
+    if (!puter) {
+      setError("Puter.js not available");
+      return;
+    }
+
+    const resumeKey = `resume:${id}`;
+    const resumeData = await puter.kv.get(resumeKey);
+    if (!resumeData) {
+      throw new Error("Resume not found");
+    }
+
+    const data: Resume = JSON.parse(resumeData);
+    await puter.kv.delete(resumeKey);
+    await puter.fs.delete(data.resumePath);
+    await puter.fs.delete(data.imagePath);
+  };
+
   return {
     isLoading: true,
     error: null,
