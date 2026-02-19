@@ -7,6 +7,95 @@ import { convertPdfToImage } from "~/lib/pdf2img";
 import {generateUUID} from "~/lib/utils";
 import {prepareInstructions, AIResponseFormat} from "../../constants";
 
+const isTipType = (value: unknown): value is "good" | "improve" =>
+    value === "good" || value === "improve";
+
+const normalizeTips = (
+    tips: unknown,
+    requireExplanation: boolean
+): { type: "good" | "improve"; tip: string; explanation?: string }[] => {
+    if (!Array.isArray(tips)) return [];
+
+    return tips
+        .map((item) => {
+            if (!item || typeof item !== "object") return null;
+            const tipType = (item as { type?: unknown }).type;
+            const tipText = (item as { tip?: unknown }).tip;
+            const explanation = (item as { explanation?: unknown }).explanation;
+
+            if (!isTipType(tipType) || typeof tipText !== "string") return null;
+            if (requireExplanation && typeof explanation !== "string") return null;
+
+            if (requireExplanation) {
+                return { type: tipType, tip: tipText, explanation };
+            }
+            return { type: tipType, tip: tipText };
+        })
+        .filter((tip): tip is { type: "good" | "improve"; tip: string; explanation?: string } => tip !== null);
+};
+
+const normalizeFeedback = (raw: unknown): Feedback | null => {
+    if (!raw || typeof raw !== "object") return null;
+
+    const root = raw as Record<string, unknown>;
+    const section = (name: keyof Feedback) => root[name] as Record<string, unknown> | undefined;
+
+    const toValidScore = (value: unknown): number | null => {
+        if (typeof value !== "number" || Number.isNaN(value)) return null;
+        const clamped = Math.max(0, Math.min(100, value));
+        return Math.round(clamped);
+    };
+
+    const overallScore = toValidScore(root.overallScore);
+    const ats = section("ATS");
+    const toneAndStyle = section("toneAndStyle");
+    const content = section("content");
+    const structure = section("structure");
+    const skills = section("skills");
+
+    if (overallScore === null || !ats || !toneAndStyle || !content || !structure || !skills) return null;
+
+    const atsScore = toValidScore(ats.score);
+    const toneScore = toValidScore(toneAndStyle.score);
+    const contentScore = toValidScore(content.score);
+    const structureScore = toValidScore(structure.score);
+    const skillsScore = toValidScore(skills.score);
+
+    if (
+        atsScore === null ||
+        toneScore === null ||
+        contentScore === null ||
+        structureScore === null ||
+        skillsScore === null
+    ) {
+        return null;
+    }
+
+    return {
+        overallScore,
+        ATS: {
+            score: atsScore,
+            tips: normalizeTips(ats.tips, false) as Feedback["ATS"]["tips"],
+        },
+        toneAndStyle: {
+            score: toneScore,
+            tips: normalizeTips(toneAndStyle.tips, true) as Feedback["toneAndStyle"]["tips"],
+        },
+        content: {
+            score: contentScore,
+            tips: normalizeTips(content.tips, true) as Feedback["content"]["tips"],
+        },
+        structure: {
+            score: structureScore,
+            tips: normalizeTips(structure.tips, true) as Feedback["structure"]["tips"],
+        },
+        skills: {
+            score: skillsScore,
+            tips: normalizeTips(skills.tips, true) as Feedback["skills"]["tips"],
+        },
+    };
+};
+
 const Upload = () => {
     const { auth, isLoading, fs, ai, kv } = usePuterStore();
     const navigate = useNavigate();
@@ -40,9 +129,8 @@ const Upload = () => {
             resumePath: uploadedFile.path,
             imagePath: uploadedImage.path,
             companyName, jobTitle, jobDescription,
-            feedback: '',
+            feedback: null as Feedback | null,
         }
-        await kv.set(`resume:${uuid}`, JSON.stringify(data));
 
         setStatusText('Analyzing...');
 
@@ -57,12 +145,19 @@ const Upload = () => {
             : feedback.message.content[0].text;
 
         try {
-            data.feedback = JSON.parse(feedbackText);
+            const parsedFeedback = JSON.parse(feedbackText);
+            const normalized = normalizeFeedback(parsedFeedback);
+            if (!normalized) {
+                console.error('AI response does not match Feedback schema:', parsedFeedback);
+                return setStatusText('Error: AI response format mismatch');
+            }
+            data.feedback = normalized;
         } catch (parseError) {
             console.error('Failed to parse AI response as JSON:', parseError);
             console.error('Raw response:', feedbackText);
             return setStatusText('Error: Invalid response format from AI');
         }
+        if (!data.feedback) return setStatusText('Error: Failed to generate feedback');
         await kv.set(`resume:${uuid}`, JSON.stringify(data));
         setStatusText('Analysis complete, redirecting...');
         console.log(data);
