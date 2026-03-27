@@ -1,8 +1,8 @@
 import { Link } from "react-router";
-import { usePuterStore } from "~/lib/puter";
+import { useMockStore } from "~/lib/mockStore";
 
 const Navbar = () => {
-  const { auth } = usePuterStore();
+  const { auth } = useMockStore();
 
   return (
     <nav className="navbar">
@@ -16,7 +16,7 @@ const Navbar = () => {
         </Link>
 
         {auth.isAuthenticated ? (
-          <button onClick={auth.signOut} className="primary-button w-fit">
+          <button onClick={async () => await auth.signOut()} className="primary-button w-fit">
             Logout
           </button>
         ) : (
@@ -30,3 +30,4 @@ const Navbar = () => {
 };
 
 export default Navbar;
+

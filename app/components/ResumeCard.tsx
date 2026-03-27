@@ -1,47 +1,49 @@
-import {Link} from "react-router";
-import ScoreCircle from "~/components/ScoreCircle";
-import {useEffect, useState} from "react";
-import {usePuterStore} from "~/lib/puter";
+import { Link } from "react-router";
+import { useMockStore } from "~/lib/mockStore";
+import { useState, useEffect } from "react";
+import type { Resume } from "~/types";
 
 const ResumeCard = ({ resume: { id, companyName, jobTitle, feedback, imagePath } }: { resume: Resume }) => {
-    const { fs } = usePuterStore();
-    const [resumeUrl, setResumeUrl] = useState('');
+  const { fs } = useMockStore();
+  const [resumeUrl, setResumeUrl] = useState('');
 
-    useEffect(() => {
-        const loadResume = async () => {
-            const blob = await fs.read(imagePath);
-            if(!blob) return;
-            let url = URL.createObjectURL(blob);
-            setResumeUrl(url);
-        }
+  useEffect(() => {
+    // Mock image load - use public path
+    setResumeUrl(imagePath);
+  }, [imagePath]);
 
-        loadResume();
-    }, [imagePath]);
+  const handleDelete = async () => {
+    if (confirm('Delete this resume?')) {
+      // Mock delete
+      console.log('Deleted resume', id);
+    }
+  };
 
-    return (
-        <Link to={`/resume/${id}`} className="resume-card animate-in fade-in duration-1000">
-            <div className="resume-card-header">
-                <div className="flex flex-col gap-2">
-                    {companyName && <h2 className="text-black! font-bold wrap-break-word">{companyName}</h2>}
-                    {jobTitle && <h3 className="text-lg wrap-break-word text-gray-500">{jobTitle}</h3>}
-                    {!companyName && !jobTitle && <h2 className="text-black! font-bold">Resume</h2>}
-                </div>
-                <div className="shrink-0">
-                    <ScoreCircle score={feedback.overallScore} />
-                </div>
-            </div>
-            {resumeUrl && (
-                <div className="gradient-border animate-in fade-in duration-1000">
-                    <div className="w-full h-full">
-                        <img
-                            src={resumeUrl}
-                            alt="resume"
-                            className="w-full h-87.5 max-sm:h-50 object-cover object-top"
-                        />
-                    </div>
-                </div>
-                )}
+  return (
+    <div className="resume-card">
+      <div className="resume-header">
+        <div className="company-job">
+          <h3>{companyName}</h3>
+          <p>{jobTitle}</p>
+        </div>
+        <div className="score-circle">
+          <div className="score-text">
+            {feedback.overallScore}
+            <span>/100</span>
+          </div>
+        </div>
+      </div>
+      <div className="resume-footer">
+        <Link to={`/resume/${id}`} className="view-btn">
+          View Details
         </Link>
-    )
-}
-export default ResumeCard
+        <button onClick={handleDelete} className="delete-btn">
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default ResumeCard;
+
