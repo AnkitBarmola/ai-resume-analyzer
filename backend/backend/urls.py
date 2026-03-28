@@ -18,7 +18,7 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('api/', include('resumes.urls')),  # Add after creating app
+    path('api/', include('resumes.urls')),
 ]
 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
