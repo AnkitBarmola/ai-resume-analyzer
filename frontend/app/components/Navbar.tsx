@@ -1,8 +1,14 @@
-import { Link } from "react-router";
-import { useMockStore } from "~/lib/mockStore";
+import { Link, useNavigate } from "react-router";
+import { isAuthenticated, signOut } from "~/lib/api";
 
 const Navbar = () => {
-  const { auth } = useMockStore();
+  const navigate = useNavigate();
+  const loggedIn = isAuthenticated();
+
+  const handleLogout = () => {
+    signOut();
+    navigate("/auth?next=/", { replace: true });
+  };
 
   return (
     <nav className="navbar">
@@ -15,8 +21,8 @@ const Navbar = () => {
           Upload Resume
         </Link>
 
-        {auth.isAuthenticated ? (
-          <button onClick={async () => await auth.signOut()} className="primary-button w-fit">
+        {loggedIn ? (
+          <button onClick={handleLogout} className="primary-button w-fit">
             Logout
           </button>
         ) : (

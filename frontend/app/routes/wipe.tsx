@@ -1,64 +1,38 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import { usePuterStore } from "~/lib/puter";
+import { getCurrentUsername, isAuthenticated, signOut } from "~/lib/api";
 
 const WipeApp = () => {
-    const { auth, isLoading, error, clearError, fs, ai, kv } = usePuterStore();
-    const navigate = useNavigate();
-    const [files, setFiles] = useState<FSItem[]>([]);
+  const navigate = useNavigate();
+  const [authenticated, setAuthenticated] = useState(false);
 
-    const loadFiles = async () => {
-        const files = (await fs.readDir("./")) as FSItem[];
-        setFiles(files);
-    };
-
-    useEffect(() => {
-        loadFiles();
-    }, []);
-
-    useEffect(() => {
-        if (!isLoading && !auth.isAuthenticated) {
-            navigate("/auth?next=/wipe");
-        }
-    }, [isLoading]);
-
-    const handleDelete = async () => {
-        files.forEach(async (file) => {
-            await fs.delete(file.path);
-        });
-        await kv.flush();
-        loadFiles();
-    };
-
-    if (isLoading) {
-        return <div>Loading...</div>;
+  useEffect(() => {
+    const loggedIn = isAuthenticated();
+    setAuthenticated(loggedIn);
+    if (!loggedIn) {
+      navigate("/auth?next=/wipe");
     }
+  }, [navigate]);
 
-    if (error) {
-        return <div>Error {error}</div>;
-    }
+  const handleLogout = () => {
+    signOut();
+    setAuthenticated(false);
+    navigate("/auth?next=/wipe");
+  };
 
-    return (
-        <div>
-            Authenticated as: {auth.user?.username}
-            <div>Existing files:</div>
-            <div className="flex flex-col gap-4">
-                {files.map((file) => (
-                    <div key={file.id} className="flex flex-row gap-4">
-                        <p>{file.name}</p>
-                    </div>
-                ))}
-            </div>
-            <div>
-                <button
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer"
-                    onClick={() => handleDelete()}
-                >
-                    Wipe App Data
-                </button>
-            </div>
-        </div>
-    );
+  return (
+    <div className="p-8">
+      <h1 className="text-3xl font-bold mb-4">Wipe App Data</h1>
+      <p className="mb-4">This page is no longer connected to legacy local file storage.</p>
+      <p className="mb-4">Authenticated as: {authenticated ? getCurrentUsername() : "Guest"}</p>
+      <button
+        className="bg-blue-500 text-white px-4 py-2 rounded-md cursor-pointer"
+        onClick={handleLogout}
+      >
+        Logout
+      </button>
+    </div>
+  );
 };
 
 export default WipeApp;

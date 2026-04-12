@@ -1,20 +1,16 @@
 import { Link } from "react-router";
-import { useMockStore } from "~/lib/mockStore";
 import { useState, useEffect } from "react";
 import type { Resume } from "~/types";
 
 const ResumeCard = ({ resume: { id, companyName, jobTitle, feedback, imagePath } }: { resume: Resume }) => {
-  const { fs } = useMockStore();
   const [resumeUrl, setResumeUrl] = useState('');
 
   useEffect(() => {
-    // Mock image load - use public path
     setResumeUrl(imagePath);
   }, [imagePath]);
 
   const handleDelete = async () => {
     if (confirm('Delete this resume?')) {
-      // Mock delete
       console.log('Deleted resume', id);
     }
   };
