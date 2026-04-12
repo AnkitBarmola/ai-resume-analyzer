@@ -1,18 +1,10 @@
-# Fix Frontend Button Errors (Missing PUT Endpoints & puter.ts)
+# Backend Implementation Plan for AI Resume Analyzer
 
-## Plan Summary
-- Missing `lib/puter.ts` (real API store using Django backend)
-- Backend lacks PUT/PATCH/DELETE for resumes & analyze endpoint
-- Steps below fix API integration for fs.upload, kv.set/get, ai.feedback used in upload/resume/wipe routes
+## Steps:
+- [x] Step 1: Create requirements.txt and install dependencies
+- [x] Step 2: Update backend/resumes/urls.py with analyze endpoint
+- [x] Step 3: Implement full logic in backend/resumes/views.py (PDF parsing with PyMuPDF, OpenAI analysis, save feedback)
+- [x] Step 4: Run pip install, makemigrations, migrate, testserver
+- [ ] Step 5: Verify with frontend upload/analyze flow
 
-## TODO Steps
-- [x] Step 1: Create `lib/puter.ts` - Real Zustand store calling Django API (fs/kv/ai/auth mirroring mockStore.ts)
-- [x] Step 2: Edit `backend/resumes/views.py` - Add `ResumeRetrieveUpdateDestroyView` & `AnalyzeView` (OpenAI integration)
-- [x] Step 3: Edit `backend/resumes/urls.py` - Add `/resumes/<str:pk>/` & `/analyze/`
-- [x] Step 4: Edit `backend/settings.py` - Add MEDIA_URL/ROOT for file uploads
-- [ ] Step 5 MANUAL: cd backend && pip install openai python-dotenv && python manage.py makemigrations resumes && python manage.py migrate && python manage.py runserver (run in VSCode terminal)
-
-- [ ] Step 6: Update frontend routes if needed (kv/fs to use new API paths)
-- [ ] Step 7: Test frontend buttons (upload, wipe, resume load) - no more errors
-
-**Next: Step 1**
+## Current Progress: Backend complete! Run `cd backend && venv\\Scripts\\activate && python manage.py runserver` to start server on http://localhost:8000. Test /api/resumes/upload/ POST with form-data (pdf_file, company_name etc.), then /api/resumes/<resume_id>/analyze/ . Set OPENAI_API_KEY in backend/.env . Frontend integration next if needed.

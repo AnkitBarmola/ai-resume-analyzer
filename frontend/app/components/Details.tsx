@@ -1,4 +1,5 @@
 import { cn } from "~/lib/utils";
+import type { Feedback } from "~/types";
 import {
   Accordion,
   AccordionContent,
