@@ -11,13 +11,14 @@
     "target": "ES2022",
     "module": "ES2022",
     "moduleResolution": "bundler",
+    "ignoreDeprecations": "6.0" ,
     "jsx": "react-jsx",
     "rootDirs": [".", "./.react-router/types"],
     "baseUrl": ".",
     "paths": {
       "~/*": ["./app/*"],
-      "~/lib/*": ["./lib/*"],
-      "~/types": ["./types"]
+      "~/lib/*": ["./app/lib/*"],    
+      "~/types": ["./app/types"]      
     },
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,
@@ -25,5 +26,6 @@
     "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true
+    
   }
 }

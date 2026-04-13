@@ -102,11 +102,11 @@ const Upload = () => {
   const [error, setError] = useState<string | null>(null);
   const [file, setFile] = useState<File | null>(null);
 
- // useEffect(() => {
-   // if (!isAuthenticated()) {
-     // navigate("/auth?next=/upload");
-    //}
-  //}, [navigate]);
+  useEffect(() => {
+    if (!isAuthenticated()) {
+      navigate("/auth?next=/upload");
+    }
+  }, [navigate]);
 
   const handleFileSelect = (file: File | null) => {
     setFile(file);
