@@ -20,7 +20,7 @@ def analyze_resume_with_ai(pdf_path: str, job_title: str, job_description: str, 
         raise ValueError("Could not extract text from PDF")
 
     genai.configure(api_key=settings.GEMINI_API_KEY)
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    model = genai.GenerativeModel("gemini-2.0-flash")
 
     prompt = f"""
 You are an expert resume reviewer and ATS (Applicant Tracking System) specialist.
