@@ -3,6 +3,8 @@ from .models import Resume
 
 
 class ResumeSerializer(serializers.ModelSerializer):
+    pdf_file = serializers.SerializerMethodField()
+
     class Meta:
         model = Resume
         fields = [
@@ -15,3 +17,7 @@ class ResumeSerializer(serializers.ModelSerializer):
             "uploaded_at",
         ]
         read_only_fields = ["id", "uploaded_at", "feedback"]
+
+    def get_pdf_file(self, obj):
+        """Return the relative path for the file endpoint"""
+        return obj.pdf_file.name

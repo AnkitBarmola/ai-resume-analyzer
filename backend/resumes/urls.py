@@ -8,4 +8,5 @@ urlpatterns = [
     path("<int:resume_id>/", views.get_resume, name="get_resume"),
     path("<int:resume_id>/delete/", views.delete_resume, name="delete_resume"),
     path("<int:resume_id>/analyze/", analysis_views.analyze_resume, name="analyze_resume"),
+    path("file/<path:path>/", views.serve_resume_file, name="serve_resume_file"),
 ]

@@ -1,7 +1,7 @@
-import fitz  # PyMuPDF
-import google.generativeai as genai
-from django.conf import settings
+import fitz
 import json
+from groq import Groq
+from django.conf import settings
 
 
 def extract_text_from_pdf(pdf_path: str) -> str:
@@ -19,11 +19,10 @@ def analyze_resume_with_ai(pdf_path: str, job_title: str, job_description: str, 
     if not resume_text:
         raise ValueError("Could not extract text from PDF")
 
-    genai.configure(api_key=settings.GEMINI_API_KEY)
-    model = genai.GenerativeModel("gemini-2.0-flash")
+    client = Groq(api_key=settings.GROQ_API_KEY)
 
     prompt = f"""
-You are an expert resume reviewer and ATS (Applicant Tracking System) specialist.
+You are an expert resume reviewer and ATS specialist.
 
 Analyze the following resume against the job description and return ONLY a JSON object with this exact structure, no extra text, no markdown, no code blocks:
 
@@ -70,8 +69,13 @@ Resume:
 {resume_text}
 """
 
-    response = model.generate_content(prompt)
-    response_text = response.text.strip()
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.3,
+    )
+
+    response_text = response.choices[0].message.content.strip()
 
     # Strip markdown code blocks if present
     if response_text.startswith("```"):

@@ -1,14 +1,7 @@
 import { Link } from "react-router";
-import { useState, useEffect } from "react";
 import type { Resume } from "~/types";
 
-const ResumeCard = ({ resume: { id, companyName, jobTitle, feedback, imagePath } }: { resume: Resume }) => {
-  const [resumeUrl, setResumeUrl] = useState('');
-
-  useEffect(() => {
-    setResumeUrl(imagePath);
-  }, [imagePath]);
-
+const ResumeCard = ({ resume: { id, companyName, jobTitle, feedback } }: { resume: Resume }) => {
   const handleDelete = async () => {
     if (confirm('Delete this resume?')) {
       console.log('Deleted resume', id);
@@ -24,7 +17,7 @@ const ResumeCard = ({ resume: { id, companyName, jobTitle, feedback, imagePath }
         </div>
         <div className="score-circle">
           <div className="score-text">
-            {feedback.overallScore}
+            {feedback ? feedback.overallScore : "—"}
             <span>/100</span>
           </div>
         </div>
@@ -42,4 +35,3 @@ const ResumeCard = ({ resume: { id, companyName, jobTitle, feedback, imagePath }
 };
 
 export default ResumeCard;
-

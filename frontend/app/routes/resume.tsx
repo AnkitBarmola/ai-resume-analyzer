@@ -1,6 +1,6 @@
 import { Link, useNavigate, useParams } from "react-router";
 import { useEffect, useState } from "react";
-import type { Feedback, Resume } from "~/types";
+import type { Feedback } from "~/types";
 import Summary from "~/components/Summary";
 import ATS from "~/components/ATS";
 import Details from "~/components/Details";
@@ -13,7 +13,6 @@ export const meta = () => ([
 
 const ResumePage = () => {
   const { id } = useParams<{ id: string }>();
-  const [imageUrl, setImageUrl] = useState<string>('');
   const [resumeUrl, setResumeUrl] = useState<string>('');
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [loading, setLoading] = useState(true);
@@ -34,12 +33,11 @@ const ResumePage = () => {
         const resume = await getResume(id);
         setFeedback(resume.feedback);
 
+        // ✅ fetch PDF and show it directly
         const resumeBlob = await fetchFile(resume.resumePath);
         const pdfBlob = new Blob([resumeBlob], { type: 'application/pdf' });
         setResumeUrl(URL.createObjectURL(pdfBlob));
 
-        const imageBlob = await fetchFile(resume.imagePath);
-        setImageUrl(URL.createObjectURL(imageBlob));
       } catch (err) {
         setLoadError((err as Error).message);
       } finally {
@@ -51,7 +49,6 @@ const ResumePage = () => {
 
     return () => {
       if (resumeUrl) URL.revokeObjectURL(resumeUrl);
-      if (imageUrl) URL.revokeObjectURL(imageUrl);
     };
   }, [id]);
 
@@ -65,16 +62,14 @@ const ResumePage = () => {
       </nav>
       <div className="flex flex-row w-full max-lg:flex-col-reverse">
         <section className="feedback-section bg-[url('/images/bg-small.svg')] bg-cover h-screen sticky top-0 items-center justify-center">
-          {imageUrl && resumeUrl && (
-            <div className="animate-in fade-in duration-1000 gradient-border max-sm:m-0 h-[90%] max-wxl:h-fit w-fit">
-              <a href={resumeUrl} target="_blank" rel="noopener noreferrer">
-                <img
-                  src={imageUrl}
-                  alt="Resume preview"
-                  className="w-full h-full object-contain rounded-2xl"
-                  title="resume"
-                />
-              </a>
+          {/* ✅ show PDF in iframe instead of image */}
+          {resumeUrl && (
+            <div className="animate-in fade-in duration-1000 gradient-border max-sm:m-0 h-[90%] w-full">
+              <iframe
+                src={resumeUrl}
+                className="w-full h-full rounded-2xl"
+                title="Resume preview"
+              />
             </div>
           )}
         </section>
