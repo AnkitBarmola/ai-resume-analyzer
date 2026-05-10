@@ -1,81 +1,114 @@
-# CareerMate - AI Resume Analyzer
-
+﻿# AI Resume Analyzer
 
 ## Project Overview
 
-CareerMate is an AI-powered resume analyzer that helps job seekers optimize their resumes for specific job applications. Users can upload their resume (PDF format), provide job details, and receive intelligent feedback on how well their resume matches the job description. The app leverages AI to analyze resumes, provide ATS (Applicant Tracking System) scores, and offer personalized improvement tips.
+AI Resume Analyzer is a full-stack resume review application built with a Django REST backend and a React frontend. Users can upload PDF resumes, register/login with JWT authentication, and analyze resumes against job descriptions using a generative AI service.
 
-Key functionalities include:
-- Resume upload and processing
-- Job-specific analysis
-- AI-generated feedback and scoring
-- Dashboard to track multiple applications
-- Secure authentication and data storage
+The current implementation uses Django, Django REST Framework, and Groq's generative AI API to score resumes and provide structured ATS feedback.
 
 ## Features
 
-- 🚀 **AI-Powered Analysis**: Uses advanced AI to evaluate resumes against job descriptions
-- 📄 **PDF Processing**: Converts and analyzes PDF resumes using PDF.js
-- 🔐 **Secure Authentication**: Integrated with Puter for user authentication
-- 💾 **Data Persistence**: Stores resumes and feedback using Puter's key-value storage
-- 📊 **Visual Feedback**: Displays scores and suggestions with interactive components
-- 🎨 **Modern UI**: Built with TailwindCSS for a responsive and attractive interface
-- ⚡ **Fast Development**: Hot Module Replacement (HMR) for efficient development
-- 🔒 **TypeScript**: Full type safety for robust code
-- 📱 **Responsive Design**: Works seamlessly across devices
+- 🚀 **AI Resume Scoring**: Analyze resume content against job descriptions using a Groq AI model
+- 📄 **PDF Resume Processing**: Extract text from uploaded PDF resumes with PyMuPDF
+- 🔐 **JWT Authentication**: User registration and login powered by Django REST Framework Simple JWT
+- 💾 **Resume Storage**: Upload, list, view, and delete resumes via Django REST API
+- 📊 **Detailed Feedback**: AI returns structured scores and tips for ATS, content, structure, skills, and tone/style
+- 🎨 **Responsive UI**: React frontend styled with TailwindCSS and modern client-side routing
+- ⚡ **Developer Workflow**: Local frontend development with Vite and React Router dev server
 
 ## Tech Stack
 
-- **Frontend Framework**: React 19 with React Router 7 for client-side routing and server-side rendering
-- **Language**: TypeScript for type-safe development
-- **Styling**: TailwindCSS for utility-first CSS styling
-- **State Management**: Zustand for lightweight and scalable state management
-- **PDF Handling**: PDF.js for parsing and converting PDF files to images
-- **Backend Services**: Puter for authentication, file storage, AI analysis, and key-value storage
-- **Build Tool**: Vite for fast development and optimized production builds
-- **Deployment**: Docker-ready for easy containerization and deployment
+- **Frontend**: React 19, React Router 7, TypeScript, TailwindCSS, Zustand
+- **Backend**: Django, Django REST Framework, Simple JWT, django-cors-headers
+- **AI Integration**: Groq generative AI via `groq` Python package
+- **PDF Parsing**: PyMuPDF (`fitz`) for extracting resume text from PDFs
+- **Storage**: SQLite for local development, Django media storage for uploaded resumes
+- **Deployment**: Frontend Dockerfile included for containerized builds
 
-## What I Learned
+## Core Backend APIs
 
-Building CareerMate was an enriching experience that deepened my understanding of modern web development and AI integration:
+- `POST /api/auth/register/` — register a new user
+- `POST /api/auth/login/` — obtain JWT access and refresh tokens
+- `POST /api/auth/refresh/` — refresh JWT token
+- `GET /api/auth/me/` — retrieve authenticated user details
+- `GET /api/resumes/` — list uploaded resumes
+- `POST /api/resumes/upload/` — upload a resume PDF
+- `GET /api/resumes/<id>/` — get resume metadata
+- `POST /api/resumes/<id>/analyze/` — analyze a resume with AI
+- `DELETE /api/resumes/<id>/delete/` — delete a resume
 
-- **AI Integration**: Learned how to integrate external AI services (Puter) for natural language processing and feedback generation, including handling API responses and error management.
-- **File Handling**: Gained expertise in processing PDF files, converting them to images for AI analysis, and managing file uploads securely.
-- **State Management**: Improved skills in using Zustand for global state management, especially for handling authentication and user data across components.
-- **Full-Stack React**: Enhanced knowledge of React Router's full-stack capabilities, including server-side rendering and data loading patterns.
-- **User Experience**: Focused on creating intuitive workflows for resume analysis, from upload to feedback display, emphasizing user-friendly interfaces.
-- **Security and Privacy**: Implemented secure authentication and data handling practices, ensuring user resumes are processed and stored responsibly.
-- **Performance Optimization**: Learned techniques for optimizing app performance, such as lazy loading and efficient data fetching.
-- **Deployment and DevOps**: Gained experience in containerizing applications with Docker and preparing for production deployments.
+## Environment Variables
+
+Create a `.env` file in `backend/` with values such as:
+
+```env
+DJANGO_SECRET_KEY=your-secret-key
+DEBUG=True
+GROQ_API_KEY=your-groq-api-key
+ANTHROPIC_API_KEY=your-anthropic-api-key
+```
 
 ## Getting Started
 
-### Prerequisites
+### Backend Setup
 
-- Node.js (version 18 or higher)
-- npm or yarn
+1. Create and activate a Python virtual environment:
 
-### Installation
-
-1. Clone the repository:
 ```bash
-git clone https://github.com/AnkitBarmola/ai-resume-analyzer.git
-cd ai-resume-analyzer
+cd backend
+python -m venv venv
+.\venv\Scripts\activate
 ```
 
-2. Install the dependencies:
+2. Install backend dependencies:
+
 ```bash
+pip install -r requirements.txt
+```
+
+3. Apply database migrations:
+
+```bash
+python manage.py migrate
+```
+
+4. Run the backend server:
+
+```bash
+python manage.py runserver
+```
+
+### Frontend Setup
+
+1. Install frontend dependencies:
+
+```bash
+cd ../frontend
 npm install
 ```
 
-### Development
-
-Start the development server with Hot Module Replacement (HMR):
+2. Start the frontend development server:
 
 ```bash
 npm run dev
 ```
 
+### Production Build
 
+To build the frontend for production:
 
-Built with ❤️ using React Router and Puter.
+```bash
+npm run build
+```
+
+To serve the built frontend:
+
+```bash
+npm run start
+```
+
+## Notes
+
+- The project no longer uses Puter. Authentication and storage are handled by Django and JWT.
+- Uploaded resumes are stored in `backend/media/` during local development.
+- The AI analysis pipeline extracts resume text from PDF files and sends it to Groq for scoring.
